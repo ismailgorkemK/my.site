@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gorkem — Personal Site</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0E1D3B;
+      --text: #F4F1EA;
+      --accent: #DF6347;
+
+      --bg-deep: rgba(14, 29, 59, 0.94);
+      --bg-glass: rgba(14, 29, 59, 0.72);
+      --text-soft: rgba(244, 241, 234, 0.76);
+      --text-faint: rgba(244, 241, 234, 0.48);
+      --line: rgba(244, 241, 234, 0.14);
+      --accent-soft: rgba(223, 99, 71, 0.22);
+      --accent-glow: rgba(223, 99, 71, 0.12);
+
+      --font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+      --font-body: "Plus Jakarta Sans", "Helvetica Neue", system-ui, -apple-system, sans-serif;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      background-color: var(--bg);
+      color: var(--text);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      overflow-x: clip;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* Subtle top scroll progress bar */
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--accent);
+      transform-origin: left center;
+      transform: scaleX(0);
+      z-index: 60;
+      pointer-events: none;
+    }
+
+    /* Minimal fixed navigation */
+    .site-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem clamp(1.25rem, 4vw, 3.5rem);
+      background: linear-gradient(
+        to bottom,
+        rgba(14, 29, 59, 0.88) 0%,
+        rgba(14, 29, 59, 0.42) 65%,
+        rgba(14, 29, 59, 0) 100%
+      );
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .nav-brand {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: clamp(1rem, 2.5vw, 2.25rem);
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      text-decoration: none;
+      position: relative;
+      padding-bottom: 0.25rem;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 1px;
+      background-color: var(--accent);
+      transform: scaleX(0);
+      transform-origin: right center;
+      transition: transform 0.35s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a:focus-visible {
+      color: var(--text);
+      outline: none;
+    }
+
+    .nav-links a:hover::after,
+    .nav-links a:focus-visible::after {
+      transform: scaleX(1);
+      transform-origin: left center;
+    }
+
+    /* Full-viewport cinematic sections */
+    .scene {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--bg);
+      overflow: hidden;
+    }
+
+    /* Section 1: Cover / Hero */
+    .hero {
+      height: 100vh;
+      height: 100svh;
+      align-items: flex-end;
+      justify-content: flex-start;
+      padding: clamp(5.5rem, 10vh, 8rem) clamp(1.5rem, 6vw, 5.5rem) clamp(3.5rem, 8vh, 5.5rem);
+    }
+
+    .hero-media {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .hero-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      will-change: transform, opacity;
+    }
+
+    .hero-media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(
+          ellipse at 50% 35%,
+          rgba(14, 29, 59, 0.14) 0%,
+          rgba(14, 29, 59, 0.64) 68%,
+          rgba(14, 29, 59, 0.96) 100%
+        ),
+        linear-gradient(
+          to top,
+          #0E1D3B 0%,
+          rgba(14, 29, 59, 0.82) 24%,
+          rgba(14, 29, 59, 0.18) 58%,
+          rgba(14, 29, 59, 0.42) 100%
+        );
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.85rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.1rem;
+    }
+
+    .eyebrow::before {
+      content: "";
+      display: inline-block;
+      width: 2.25rem;
+      height: 1px;
+      background-color: var(--accent);
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(4.25rem, 13vw, 10.5rem);
+      font-weight: 600;
+      line-height: 0.9;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      text-shadow: 0 18px 48px rgba(14, 29, 59, 0.7);
+    }
+
+    .hero-lead {
+      margin-top: 1.35rem;
+      font-size: clamp(1rem, 1.6vw, 1.25rem);
+      font-weight: 300;
+      letter-spacing: 0.03em;
+      color: var(--text-soft);
+      max-width: 34ch;
+    }
+
+    .scroll-cue {
+      position: absolute;
+      right: clamp(1.5rem, 5vw, 4.5rem);
+      bottom: clamp(2rem, 6vh, 3.5rem);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--text-faint);
+      font-size: 0.68rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+
+    .scroll-cue-line {
+      width: 1px;
+      height: 3.5rem;
+      background: linear-gradient(to bottom, var(--accent), rgba(223, 99, 71, 0));
+    }
+
+    /* Split 3D Showcase Sections (Mascot & Interests) */
+    .showcase {
+      padding: clamp(5.5rem, 10vh, 7.5rem) clamp(1.5rem, 6vw, 5.5rem);
+      border-top: 1px solid var(--line);
+    }
+
+    .showcase::before {
+      content: "";
+      position: absolute;
+      width: min(62vw, 720px);
+      height: min(62vw, 720px);
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--accent-glow) 0%, rgba(14, 29, 59, 0) 68%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .showcase-right::before {
+      right: -8%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .showcase-left::before {
+      left: -8%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .showcase-inner {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 1240px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: center;
+      gap: clamp(2.5rem, 6vw, 6rem);
+    }
+
+    .showcase-left .showcase-copy {
+      order: 2;
+    }
+
+    .showcase-left .stage-3d {
+      order: 1;
+    }
+
+    .showcase-copy {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .showcase-copy h2 {
+      font-family: var(--font-display);
+      font-size: clamp(3.5rem, 8.5vw, 7.25rem);
+      font-weight: 600;
+      line-height: 0.94;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .showcase-rule {
+      width: 3.5rem;
+      height: 2px;
+      background-color: var(--accent);
+      margin: 1.75rem 0 1.4rem;
+    }
+
+    .showcase-copy p {
+      font-size: clamp(1rem, 1.45vw, 1.2rem);
+      font-weight: 300;
+      color: var(--text-soft);
+      max-width: 32ch;
+      line-height: 1.65;
+    }
+
+    /* 3D Ceramic Tile Stage */
+    .stage-3d {
+      perspective: 1200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .frame-3d {
+      position: relative;
+      width: min(100%, 490px);
+      aspect-ratio: 1 / 1;
+      transform-style: preserve-3d;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: transform, opacity;
+    }
+
+    /* Offset 3D coral depth frame behind the artwork */
+    .frame-3d::before {
+      content: "";
+      position: absolute;
+      inset: 14px -14px -14px 14px;
+      border: 1px solid var(--accent);
+      border-radius: 14px;
+      transform: translateZ(-36px);
+      pointer-events: none;
+      opacity: 0.72;
+    }
+
+    .frame-3d-surface {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background-color: var(--text);
+      box-shadow:
+        0 34px 70px rgba(14, 29, 59, 0.9),
+        0 0 0 1px rgba(244, 241, 234, 0.08);
+      transform: translateZ(0);
+    }
+
+    /* Subtle ceramic glaze sheen */
+    .frame-3d-surface::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(244, 241, 234, 0.16) 0%,
+        rgba(244, 241, 234, 0) 42%,
+        rgba(14, 29, 59, 0.22) 100%
+      );
+      pointer-events: none;
+    }
+
+    .frame-3d-surface img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .frame-3d-surface.mascot-surface img {
+      object-fit: contain;
+      padding: 6%;
+      background-color: var(--text);
+    }
+
+    /* Minimal Footer */
+    footer {
+      background-color: var(--bg);
+      border-top: 1px solid var(--line);
+      padding: 2.25rem clamp(1.5rem, 6vw, 5.5rem);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem 2rem;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      color: var(--text-faint);
+    }
+
+    .footer-name {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    /* Phone & Tablet Responsive Layout */
+    @media (max-width: 860px) {
+      .site-nav {
+        padding: 1rem 1.25rem;
+      }
+
+      .nav-brand {
+        font-size: 1.15rem;
+      }
+
+      .nav-links {
+        gap: 0.9rem;
+      }
+
+      .nav-links a {
+        font-size: 0.68rem;
+        letter-spacing: 0.12em;
+      }
+
+      .hero {
+        align-items: flex-end;
+        padding: 5.5rem 1.5rem 4rem;
+      }
+
+      .scroll-cue {
+        display: none;
+      }
+
+      .showcase {
+        padding: 5.5rem 1.5rem 4rem;
+      }
+
+      .showcase-inner {
+        grid-template-columns: 1fr;
+        gap: 2.25rem;
+        text-align: left;
+      }
+
+      .showcase-left .showcase-copy,
+      .showcase-left .stage-3d {
+        order: unset;
+      }
+
+      .frame-3d {
+        width: min(100%, 380px);
+      }
+
+      .frame-3d::before {
+        inset: 10px -10px -10px 10px;
+      }
+
+      footer {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 2rem 1.5rem;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .nav-links {
+        gap: 0.65rem;
+      }
+
+      .nav-links a {
+        font-size: 0.62rem;
+        letter-spacing: 0.08em;
+      }
+
+      .hero h1 {
+        font-size: clamp(3.4rem, 16vw, 4.75rem);
+      }
+
+      .showcase-copy h2 {
+        font-size: clamp(2.85rem, 13vw, 4rem);
+      }
+    }
+
+    /* Strictly disable all motion for users who prefer reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .scroll-progress {
+        display: none;
+      }
+
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+
+      .frame-3d {
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <nav class="site-nav" aria-label="Primary">
+    <a class="nav-brand" href="#cover">Gorkem</a>
+    <ul class="nav-links">
+      <li><a href="#owl">Owl</a></li>
+      <li><a href="#music">Music</a></li>
+      <li><a href="#sports">Sports</a></li>
+      <li><a href="#food">Food</a></li>
+    </ul>
+  </nav>
+
+  <header id="cover" class="scene hero">
+    <div class="hero-media">
+      <img
+        src="images/MASKOT.jpg"
+        alt="Iznik-style ceramic tile mural showing an owl perched in a pomegranate tree overlooking musicians at a picnic, birds, and outdoor sports."
+      >
+    </div>
+    <div class="hero-content">
+      <span class="eyebrow">Personal Archive</span>
+      <h1>Gorkem</h1>
+      <p class="hero-lead">Music, sports, and food — framed in cobalt and ceramic light.</p>
+    </div>
+    <a class="scroll-cue" href="#owl" aria-label="Scroll to next section">
+      <span>Scroll</span>
+      <span class="scroll-cue-line" aria-hidden="true"></span>
+    </a>
+  </header>
+
+  <main>
+    <section id="owl" class="scene showcase showcase-right" aria-labelledby="owl-heading">
+      <div class="showcase-inner">
+        <div class="showcase-copy">
+          <span class="eyebrow">The Mascot</span>
+          <h2 id="owl-heading">Night Owl</h2>
+          <div class="showcase-rule" aria-hidden="true"></div>
+          <p>A watchful companion guiding every corner of Gorkem's space.</p>
+        </div>
+        <div class="stage-3d">
+          <div class="frame-3d" data-tilt>
+            <div class="frame-3d-surface mascot-surface">
+              <img
+                src="images/kapak.jpg"
+                alt="Iznik ceramic-style owl mascot decorated with cobalt blue, turquoise, and pomegranate coral floral motifs."
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="music" class="scene showcase showcase-left" aria-labelledby="music-heading">
+      <div class="showcase-inner">
+        <div class="showcase-copy">
+          <span class="eyebrow">01 / Interest</span>
+          <h2 id="music-heading">Music</h2>
+          <div class="showcase-rule" aria-hidden="true"></div>
+          <p>Resonant strings, timeless melodies, and the quiet pull of rhythm.</p>
+        </div>
+        <div class="stage-3d">
+          <div class="frame-3d" data-tilt>
+            <div class="frame-3d-surface">
+              <img
+                src="images/kart1.jpg"
+                alt="Ceramic tile depicting an owl perched on a branch holding an ornate patterned lute."
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="sports" class="scene showcase showcase-right" aria-labelledby="sports-heading">
+      <div class="showcase-inner">
+        <div class="showcase-copy">
+          <span class="eyebrow">02 / Interest</span>
+          <h2 id="sports-heading">Sports</h2>
+          <div class="showcase-rule" aria-hidden="true"></div>
+          <p>Momentum, open air, and the sharp focus of the pitch.</p>
+        </div>
+        <div class="stage-3d">
+          <div class="frame-3d" data-tilt>
+            <div class="frame-3d-surface">
+              <img
+                src="images/kart3.jpg"
+                alt="Ceramic tile depicting an owl standing on a hill with one claw resting on a floral-patterned football."
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="food" class="scene showcase showcase-left" aria-labelledby="food-heading">
+      <div class="showcase-inner">
+        <div class="showcase-copy">
+          <span class="eyebrow">03 / Interest</span>
+          <h2 id="food-heading">Food</h2>
+          <div class="showcase-rule" aria-hidden="true"></div>
+          <p>Warm bowls, rich craft, and flavors worth lingering over.</p>
+        </div>
+        <div class="stage-3d">
+          <div class="frame-3d" data-tilt>
+            <div class="frame-3d-surface">
+              <img
+                src="images/kart2.jpg"
+                alt="Ceramic tile depicting an owl beside a steaming patterned bowl topped with pomegranates and figs."
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span class="footer-name">Gorkem</span>
+    <p>The images on this site were made with AI.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+  <script>
+    (function () {
+      const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+      if (reducedMotionQuery.matches) {
+        return;
+      }
+
+      if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+        return;
+      }
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      const mm = gsap.matchMedia();
+
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        // Scroll progress indicator
+        gsap.to(".scroll-progress", {
+          scaleX: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: document.body,
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 0.2
+          }
+        });
+
+        // Hero cover soft fade and subtle depth settle
+        gsap.from(".hero-media img", {
+          opacity: 0,
+          scale: 1.07,
+          duration: 1.5,
+          ease: "power2.out"
+        });
+
+        gsap.from(".hero-content .eyebrow, .hero-content h1, .hero-content .hero-lead", {
+          opacity: 0,
+          y: 32,
+          duration: 1.15,
+          stagger: 0.14,
+          delay: 0.2,
+          ease: "power3.out"
+        });
+
+        // Subtle cinematic parallax on cover image while scrolling away
+        gsap.to(".hero-media img", {
+          yPercent: 12,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".hero",
+            start: "top top",
+            end: "bottom top",
+            scrub: true
+          }
+        });
+
+        // Soft scroll-triggered fade-in for each section's heading and 3D image
+        document.querySelectorAll(".showcase").forEach((section) => {
+          const copyTargets = section.querySelectorAll(
+            ".eyebrow, h2, .showcase-rule, p"
+          );
+          const frame = section.querySelector(".frame-3d");
+
+          gsap.from(copyTargets, {
+            opacity: 0,
+            y: 36,
+            duration: 1.1,
+            stagger: 0.1,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 74%",
+              once: true
+            }
+          });
+
+          if (frame) {
+            gsap.from(frame, {
+              opacity: 0,
+              y: 44,
+              rotateX: 7,
+              scale: 0.96,
+              transformPerspective: 1200,
+              duration: 1.25,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: section,
+                start: "top 74%",
+                once: true
+              }
+            });
+          }
+        });
+
+        // Subtle 3D tilt on pointer devices only
+        const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+        const cleanupTilt = [];
+
+        if (finePointer.matches) {
+          document.querySelectorAll("[data-tilt]").forEach((card) => {
+            const onMove = (event) => {
+              const rect = card.getBoundingClientRect();
+              const x = (event.clientX - rect.left) / rect.width - 0.5;
+              const y = (event.clientY - rect.top) / rect.height - 0.5;
+              card.style.transform =
+                "rotateY(" + (x * 9).toFixed(2) + "deg) rotateX(" + (-y * 9).toFixed(2) + "deg)";
+            };
+
+            const onLeave = () => {
+              card.style.transform = "rotateY(0deg) rotateX(0deg)";
+            };
+
+            card.addEventListener("pointermove", onMove);
+            card.addEventListener("pointerleave", onLeave);
+
+            cleanupTilt.push(() => {
+              card.removeEventListener("pointermove", onMove);
+              card.removeEventListener("pointerleave", onLeave);
+              card.style.transform = "";
+            });
+          });
+        }
+
+        return () => {
+          cleanupTilt.forEach((fn) => fn());
+        };
+      });
+    })();
+  </script>
+</body>
+</html>
